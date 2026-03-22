@@ -1,5 +1,5 @@
 # Build Go App
-FROM golang:1.22-bullseye AS builder
+FROM golang:latest AS builder
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
