@@ -1,0 +1,277 @@
+@import "tailwindcss";
+
+@theme {
+  --color-github-bg-primary: #0d1117;
+  --color-github-bg-secondary: #010409;
+  --color-github-bg-tertiary: #161b22;
+  --color-github-border: #30363d;
+  --color-github-text-primary: #e6edf3;
+  --color-github-text-secondary: #8b949e;
+  --color-github-blue: #58a6ff;
+  --color-github-green: #3fb950;
+
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+
+  --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-github-bg-primary);
+  color: var(--color-github-text-primary);
+}
+
+/* App shell: minimal depth, no heavy glow */
+.es-app-shell {
+  background-color: var(--color-github-bg-primary);
+  background-image: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(88, 166, 255, 0.06), transparent);
+}
+
+/* —— Typography —— */
+.es-h1 {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+@media (min-width: 768px) {
+  .es-h1 {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+}
+
+.es-h2 {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.es-body {
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  color: var(--color-github-text-secondary);
+}
+
+.es-overline {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: none;
+}
+
+/* —— Cards —— */
+.es-card-static {
+  border-radius: 0.75rem;
+}
+
+.es-card-interactive {
+  border-radius: 0.75rem;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.es-card-interactive:hover {
+  border-color: #444c56;
+  background-color: #1c2128;
+}
+
+/* —— Buttons —— */
+.es-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+.es-btn-primary {
+  background-color: #1f6feb;
+  color: #fff;
+  border: 1px solid transparent;
+}
+
+.es-btn-primary:hover {
+  background-color: #388bfd;
+}
+
+.es-btn-secondary {
+  background-color: #21262d;
+  color: var(--color-github-text-primary);
+  border: 1px solid var(--color-github-border);
+}
+
+.es-btn-secondary:hover {
+  background-color: #30363d;
+  border-color: #444c56;
+}
+
+.es-btn-ghost {
+  background-color: transparent;
+  color: var(--color-github-text-secondary);
+  border: 1px solid transparent;
+}
+
+.es-btn-ghost:hover {
+  color: var(--color-github-text-primary);
+  background-color: rgba(177, 186, 196, 0.08);
+}
+
+/* —— Inputs —— */
+.es-input {
+  width: 100%;
+  height: 2.5rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-github-border);
+  background-color: var(--color-github-bg-secondary);
+  color: var(--color-github-text-primary);
+  font-size: 0.8125rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.es-input::placeholder {
+  color: var(--color-github-text-secondary);
+  opacity: 0.7;
+}
+
+.es-input:focus {
+  outline: none;
+  border-color: var(--color-github-blue);
+  box-shadow: 0 0 0 3px rgba(56, 139, 253, 0.15);
+}
+
+.es-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-github-text-secondary);
+  margin-bottom: 0.375rem;
+}
+
+/* —— Layout —— */
+.es-page {
+  width: 100%;
+}
+
+.es-container {
+  width: 100%;
+  max-width: 72rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .es-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.neural-bg {
+  background-color: var(--color-github-bg-primary);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-panel {
+  background: rgba(1, 4, 9, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-github-border);
+}
+
+.glass-card {
+  background: var(--color-github-bg-tertiary);
+  border: 1px solid var(--color-github-border);
+  border-radius: 0.75rem;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.glass-card:hover {
+  background: #1c2128;
+  border-color: #444c56;
+}
+
+.chat-bubble {
+  max-width: 85%;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  border: 1px solid var(--color-github-border);
+}
+
+.chat-bubble-ai {
+  background: var(--color-github-bg-tertiary);
+  color: var(--color-github-text-primary);
+}
+
+.chat-bubble-user {
+  background: rgba(31, 111, 235, 0.12);
+  border-color: rgba(56, 139, 253, 0.35);
+  color: #fff;
+  margin-left: auto;
+}
+
+.whatsapp-sidebar-item {
+  transition: background-color 0.15s ease, color 0.15s ease;
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin: 0 0.5rem;
+}
+
+.whatsapp-sidebar-item:hover {
+  background: rgba(177, 186, 196, 0.08);
+}
+
+.whatsapp-sidebar-item.active {
+  background: rgba(31, 111, 235, 0.1);
+  position: relative;
+}
+
+.whatsapp-sidebar-item.active::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 3px;
+  background: var(--color-github-blue);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}

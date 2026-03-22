@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eigenstate — Cover Animation</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0c10;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    overflow: hidden;
+    width: 1280px;
+    height: 720px;
+  }
+
+  canvas#bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .scene {
+    position: relative;
+    z-index: 1;
+    width: 1280px;
+    height: 720px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Left content panel */
+  .left {
+    width: 52%;
+    padding: 0 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .tagline-pre {
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: #00e5ff;
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp 0.6s ease forwards 0.4s;
+    margin-bottom: 18px;
+  }
+
+  .title {
+    font-size: 80px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.7s cubic-bezier(0.2,0.8,0.3,1) forwards 0.7s;
+    letter-spacing: -2px;
+    margin-bottom: 6px;
+  }
+
+  .title span {
+    background: linear-gradient(90deg, #00e5ff, #4fc3f7, #7c4dff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle-block {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp 0.6s ease forwards 1.1s;
+  }
+
+  .subtitle-line {
+    width: 32px;
+    height: 2px;
+    background: #00e5ff;
+    flex-shrink: 0;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: #aad4e8;
+    font-style: italic;
+    letter-spacing: 0.5px;
+  }
+
+  .description {
+    font-size: 17px;
+    color: #cce8f4;
+    line-height: 1.65;
+    max-width: 440px;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp 0.6s ease forwards 1.4s;
+    margin-bottom: 40px;
+  }
+
+  .description strong {
+    color: #00e5ff;
+    font-weight: 600;
+  }
+
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 1.8s;
+    margin-bottom: 36px;
+  }
+
+  .badge {
+    padding: 6px 16px;
+    border: 1px solid rgba(0, 229, 255, 0.45);
+    border-radius: 4px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #80deea;
+    text-transform: uppercase;
+    background: rgba(0, 229, 255, 0.05);
+  }
+
+  /* Typing indicator */
+  .typing-block {
+    opacity: 0;
+    animation: fadeUp 0.5s ease forwards 2.2s;
+  }
+
+  .typing-label {
+    font-size: 11px;
+    color: #4fc3f7;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+
+  .code-line {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    color: #b2ebf2;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(0, 229, 255, 0.04);
+    border-left: 2px solid #00e5ff;
+    border-radius: 0 4px 4px 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .code-line .prompt { color: #4fc3f7; }
+  .code-line .cmd { color: #e0f7fa; }
+  .typed-text { color: #a5d6a7; }
+
+  /* Right visual */
+  .right {
+    width: 48%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Graph visualization */
+  .graph-container {
+    position: relative;
+    width: 480px;
+    height: 480px;
+    opacity: 0;
+    animation: fadeIn 1s ease forwards 1s;
+  }
+
+  canvas#graph {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* Scan line */
+  .scanline {
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00e5ff44, #00e5ff88, #00e5ff44, transparent);
+    animation: scan 4s linear infinite;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Bottom bar */
+  .bottom-bar {
+    position: absolute;
+    bottom: 28px;
+    left: 64px;
+    right: 64px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards 2.6s;
+    border-top: 1px solid rgba(0,229,255,0.15);
+    padding-top: 16px;
+  }
+
+  .bottom-bar .left-info {
+    font-size: 11px;
+    color: #546e7a;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .bottom-bar .right-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: #546e7a;
+    letter-spacing: 1px;
+  }
+
+  .pulse-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #00e5ff;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  /* Corner decorations */
+  .corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    opacity: 0.5;
+  }
+  .corner.tl { top: 24px; left: 24px; border-top: 2px solid #00e5ff; border-left: 2px solid #00e5ff; }
+  .corner.tr { top: 24px; right: 24px; border-top: 2px solid #00e5ff; border-right: 2px solid #00e5ff; }
+  .corner.bl { bottom: 24px; left: 24px; border-bottom: 2px solid #00e5ff; border-left: 2px solid #00e5ff; }
+  .corner.br { bottom: 24px; right: 24px; border-bottom: 2px solid #00e5ff; border-right: 2px solid #00e5ff; }
+
+  /* Vertical decorative line */
+  .v-divider {
+    position: absolute;
+    left: 52%;
+    top: 60px;
+    bottom: 60px;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, rgba(0,229,255,0.2) 30%, rgba(0,229,255,0.2) 70%, transparent);
+    opacity: 0;
+    animation: fadeIn 1s ease forwards 0.5s;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+  @keyframes scan {
+    0% { top: 0%; }
+    100% { top: 100%; }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+<canvas id="bg"></canvas>
+
+<div class="scene">
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+  <div class="v-divider"></div>
+
+  <div class="left">
+    <div class="tagline-pre">Codebase Memory Engine</div>
+    <div class="title"><span>Eigenstate</span></div>
+    <div class="subtitle-block">
+      <div class="subtitle-line"></div>
+      <div class="subtitle">Reconstructing the "why" behind every engineering decision.</div>
+    </div>
+    <div class="description">
+      Git tells you <strong>what</strong> changed.<br>
+      Eigenstate tells you <strong>why</strong> it was worth the tradeoff.
+    </div>
+    <div class="badges">
+      <div class="badge">Hackathon Technical Proposal</div>
+      <div class="badge">Team Pralay</div>
+      <div class="badge">Developer Tools / AI Infra</div>
+    </div>
+    <div class="typing-block">
+      <div class="typing-label">// Live Query</div>
+      <div class="code-line">
+        <span class="prompt">❯</span>
+        <span class="cmd">eigenstate.query(<span class="typed-text" id="typed"></span>)</span>
+        <span id="cursor" style="color:#00e5ff;animation:blink 0.8s step-end infinite">▋</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="graph-container">
+      <canvas id="graph" width="480" height="480"></canvas>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-bar">
+  <div class="left-info">Team Pralay &nbsp;·&nbsp; Hackathon 2025</div>
+  <div class="right-info">
+    <div class="pulse-dot"></div>
+    Decision Graph Active
+  </div>
+</div>
+
+<style>
+@keyframes blink { 50% { opacity: 0; } }
+</style>
+
+<script>
+// ── Particle background ──────────────────────────────────────────────────────
+const bgCanvas = document.getElementById('bg');
+const bgCtx = bgCanvas.getContext('2d');
+bgCanvas.width = 1280; bgCanvas.height = 720;
+
+const particles = Array.from({length: 80}, () => ({
+  x: Math.random() * 1280,
+  y: Math.random() * 720,
+  r: Math.random() * 1.5 + 0.3,
+  vx: (Math.random() - 0.5) * 0.25,
+  vy: (Math.random() - 0.5) * 0.25,
+  opacity: Math.random() * 0.4 + 0.1
+}));
+
+function drawBg() {
+  bgCtx.clearRect(0, 0, 1280, 720);
+  // Subtle radial glow on right side matching the slide
+  const g = bgCtx.createRadialGradient(1050, 360, 0, 1050, 360, 560);
+  g.addColorStop(0, 'rgba(0,180,255,0.06)');
+  g.addColorStop(1, 'transparent');
+  bgCtx.fillStyle = g;
+  bgCtx.fillRect(0, 0, 1280, 720);
+
+  // Connection lines between close particles
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i+1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const d = Math.sqrt(dx*dx + dy*dy);
+      if (d < 100) {
+        bgCtx.beginPath();
+        bgCtx.strokeStyle = `rgba(0,200,255,${0.06 * (1 - d/100)})`;
+        bgCtx.lineWidth = 0.5;
+        bgCtx.moveTo(particles[i].x, particles[i].y);
+        bgCtx.lineTo(particles[j].x, particles[j].y);
+        bgCtx.stroke();
+      }
+    }
+  }
+
+  // Dots
+  particles.forEach(p => {
+    bgCtx.beginPath();
+    bgCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    bgCtx.fillStyle = `rgba(0,229,255,${p.opacity})`;
+    bgCtx.fill();
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0) p.x = 1280; if (p.x > 1280) p.x = 0;
+    if (p.y < 0) p.y = 720; if (p.y > 720) p.y = 0;
+  });
+}
+
+// ── Decision Graph ───────────────────────────────────────────────────────────
+const gc = document.getElementById('graph');
+const gx = gc.getContext('2d');
+
+const nodes = [
+  { id: 0, x: 240, y: 240, label: 'auth.go', type: 'fn', r: 28 },
+  { id: 1, x: 110, y: 130, label: 'Decision\n#A14', type: 'dec', r: 22 },
+  { id: 2, x: 370, y: 130, label: 'Decision\n#B22', type: 'dec', r: 22 },
+  { id: 3, x: 100, y: 330, label: 'PR #88', type: 'pr', r: 18 },
+  { id: 4, x: 380, y: 340, label: 'Issue\n#301', type: 'issue', r: 18 },
+  { id: 5, x: 240, y: 90,  label: 'tradeoff\n:performance', type: 'tag', r: 16 },
+  { id: 6, x: 160, y: 390, label: 'commit\nb3f9a', type: 'commit', r: 15 },
+  { id: 7, x: 320, y: 400, label: 'commit\na1c2d', type: 'commit', r: 15 },
+  { id: 8, x: 60, y: 220,  label: 'lint.go', type: 'fn', r: 20 },
+  { id: 9, x: 420, y: 240, label: 'parse.go', type: 'fn', r: 20 },
+];
+
+const edges = [
+  [0,1],[0,2],[0,5],[0,3],[0,4],[1,8],[2,9],[3,6],[4,7],[1,5],[2,5]
+];
+
+const colors = {
+  fn:     { fill: '#0d2a3a', stroke: '#00e5ff', text: '#b2ebf2' },
+  dec:    { fill: '#1a1040', stroke: '#7c4dff', text: '#ce93d8' },
+  pr:     { fill: '#0d2a1a', stroke: '#00c853', text: '#a5d6a7' },
+  issue:  { fill: '#2a1a0d', stroke: '#ff9800', text: '#ffcc80' },
+  tag:    { fill: '#1a2a0d', stroke: '#8bc34a', text: '#dcedc8' },
+  commit: { fill: '#1a1a1a', stroke: '#546e7a', text: '#90a4ae' },
+};
+
+let graphT = 0;
+let revealPhase = 0; // nodes reveal over time
+let nodeReveal = new Array(nodes.length).fill(0);
+
+function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+function drawGraph(timestamp) {
+  gx.clearRect(0, 0, 480, 480);
+
+  // Staggered reveal
+  nodes.forEach((n, i) => {
+    const delay = 1.2 + i * 0.12;
+    nodeReveal[i] = Math.min(1, Math.max(0, (graphT - delay) / 0.4));
+  });
+
+  // Draw edges
+  edges.forEach(([a, b]) => {
+    const na = nodes[a], nb = nodes[b];
+    const reveal = Math.min(nodeReveal[a], nodeReveal[b]);
+    if (reveal <= 0) return;
+    const dx = nb.x - na.x, dy = nb.y - na.y;
+    const dist = Math.sqrt(dx*dx+dy*dy);
+    gx.save();
+    gx.globalAlpha = reveal * 0.5;
+    gx.beginPath();
+    gx.strokeStyle = '#00e5ff';
+    gx.lineWidth = 0.8;
+    gx.setLineDash([4, 4]);
+    gx.lineDashOffset = -timestamp * 0.02;
+    gx.moveTo(na.x, na.y);
+    gx.lineTo(nb.x, nb.y);
+    gx.stroke();
+    gx.restore();
+
+    // Arrow
+    if (reveal > 0.8) {
+      const angle = Math.atan2(dy, dx);
+      const ex = nb.x - Math.cos(angle) * (nb.r + 4);
+      const ey = nb.y - Math.sin(angle) * (nb.r + 4);
+      gx.save();
+      gx.globalAlpha = reveal * 0.6;
+      gx.fillStyle = '#00e5ff';
+      gx.translate(ex, ey);
+      gx.rotate(angle);
+      gx.beginPath();
+      gx.moveTo(0,0); gx.lineTo(-7,-3); gx.lineTo(-7,3);
+      gx.closePath(); gx.fill();
+      gx.restore();
+    }
+  });
+
+  // Draw nodes
+  nodes.forEach((n, i) => {
+    const rev = easeOut(nodeReveal[i]);
+    if (rev <= 0) return;
+    const c = colors[n.type];
+    const pulse = n.id === 0 ? 1 + 0.08 * Math.sin(graphT * 2) : 1;
+    const r = n.r * pulse * rev;
+
+    // Glow for central node
+    if (n.id === 0 && rev > 0.5) {
+      const glw = gx.createRadialGradient(n.x, n.y, r, n.x, n.y, r * 3);
+      glw.addColorStop(0, 'rgba(0,229,255,0.18)');
+      glw.addColorStop(1, 'transparent');
+      gx.beginPath();
+      gx.arc(n.x, n.y, r * 3, 0, Math.PI*2);
+      gx.fillStyle = glw;
+      gx.fill();
+    }
+
+    // Node circle
+    gx.save();
+    gx.globalAlpha = rev;
+    gx.beginPath();
+    gx.arc(n.x, n.y, r, 0, Math.PI*2);
+    gx.fillStyle = c.fill;
+    gx.fill();
+    gx.strokeStyle = c.stroke;
+    gx.lineWidth = n.id === 0 ? 2 : 1.2;
+    gx.stroke();
+
+    // Label
+    gx.fillStyle = c.text;
+    gx.font = `${n.id === 0 ? '11px' : '9px'} Consolas, monospace`;
+    gx.textAlign = 'center';
+    gx.textBaseline = 'middle';
+    const lines = n.label.split('\n');
+    const lh = 11;
+    lines.forEach((line, li) => {
+      gx.fillText(line, n.x, n.y + (li - (lines.length-1)/2) * lh);
+    });
+    gx.restore();
+  });
+}
+
+// ── Typing animation ─────────────────────────────────────────────────────────
+const typedEl = document.getElementById('typed');
+const queries = [
+  '"why was auth.go refactored?"',
+  '"what tradeoff did PR #88 make?"',
+  '"show lineage of parse.go"',
+];
+let qIdx = 0, charIdx = 0, typing = true;
+
+function typeNext() {
+  const q = queries[qIdx];
+  if (typing) {
+    if (charIdx <= q.length) {
+      typedEl.textContent = q.slice(0, charIdx++);
+      setTimeout(typeNext, charIdx <= q.length ? 55 : 1200);
+    } else {
+      typing = false;
+      setTimeout(typeNext, 1800);
+    }
+  } else {
+    if (charIdx > 0) {
+      typedEl.textContent = q.slice(0, --charIdx);
+      setTimeout(typeNext, 30);
+    } else {
+      typing = true;
+      qIdx = (qIdx + 1) % queries.length;
+      setTimeout(typeNext, 400);
+    }
+  }
+}
+setTimeout(typeNext, 2600);
+
+// ── Main loop ────────────────────────────────────────────────────────────────
+let lastTs = null;
+function loop(ts) {
+  if (!lastTs) lastTs = ts;
+  graphT += (ts - lastTs) / 1000;
+  lastTs = ts;
+  drawBg();
+  drawGraph(ts);
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

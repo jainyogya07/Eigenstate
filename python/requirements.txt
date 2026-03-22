@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+google-genai
+requests
+tree-sitter
+tree-sitter-javascript
+tree-sitter-typescript
+tree-sitter-python
+tree-sitter-go
+python-dotenv

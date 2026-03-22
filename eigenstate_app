@@ -1,0 +1,8 @@
+eigenstate_app/               # Your Root Folder
+├── .env                      # Store your GitHub & LLM API keys here
+├── requirements.txt          # Python dependencies
+├── main_app.py               # Home / Landing Page
+└── pages/                    # MUST be named 'pages'
+    ├── 1_📊_Dashboard.py     # Repo Analytics (Commits/Issues)
+    ├── 2_🧠_Reasoning.py     # The RAG / AI "Why" Interface
+    └── 3_⚙️_Settings.py      # Configuration & GitHub Token
